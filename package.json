@@ -1,0 +1,16 @@
+{
+  "name": "coffee-test",
+  "version": "0.0.1",
+  "description": "First coffee program",
+  "main": "server.js",
+  "repository": "git@web01/coffee-test.git",
+  "private": "true",
+  "author": "Barrie Campbell",
+  "license": "CC BY 4.0",
+  "dependencies": {
+    "express": "~4.13.3",
+    "coffee-script": "~1.10.0",
+    "cylon": "~1.2.0",
+    "cylon-api-http": "~0.4.0"
+  }
+}
