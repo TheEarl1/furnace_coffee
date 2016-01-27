@@ -14,23 +14,42 @@ robot_config =
     ping:
       driver: "ping"
       connection: "loopback"
-    bmp180:
+    pca9544a:
+      driver: "pca9544a"
+      connection: "raspi"
+      address: "0x73"
+    bmp1801:
       driver: "bmp180"
       connection: "raspi"
+      address: "0x77"
+    bmp1802:
+      driver: "bmp180"
+      connection: "raspi"
+      address: "0x77"
 
   work: (my) ->
     every(20.seconds(), () ->
-      console.log "Temp:"
-      my.bmp180.getTemperature( (err,val) ->
-        console.log err if err
-        console.log val
-      )
-    ) 
-    every(1.seconds(), () ->
-      console.log "ping"
+      my.pca9544a.setChannel0( () ->
+        my.bmp1801.getTemperature( (err,val) ->
+          if err
+            console.log err
+          else
+            console.log "0 Temp: " + val.temp.toString()
+        )
+      ) 
     )
-    after(5.seconds(), () ->
-      console.log "five more seconds..."
+    every(20.seconds(), () ->
+      my.pca9544a.setChannel3( () ->
+        my.bmp1802.getTemperature( (err,val) ->
+          if err
+            console.log err
+          else
+            console.log "3 Temp: " + val.temp.toString()
+        )
+      ) 
+    )
+    every(5.seconds(), () ->
+      console.log "ping"
     )
 
 # console.log robot_config
