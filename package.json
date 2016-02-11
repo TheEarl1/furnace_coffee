@@ -15,6 +15,7 @@
     "cylon-i2c": "git+ssh://git@web01:cylon-i2c.git#pca9544",
     "cylon-raspi": "^0.18.0",
     "express": "~4.13.3",
+    "htu21d-i2c": "git+https://github.com/bbx10/node-htu21d.git",
     "rwlock": "^5.0.0"
   }
 }

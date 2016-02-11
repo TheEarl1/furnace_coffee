@@ -1,0 +1,8 @@
+htu21df = new(require 'htu21d-i2c')()
+
+htu21df.readTemperature (temp) ->
+    console.log 'Temperature, C:' + temp
+
+    htu21df.readHumidity (humidity) ->
+        console.log 'Humidity, RH %:' + humidity
+
