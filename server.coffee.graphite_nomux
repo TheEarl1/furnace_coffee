@@ -1,0 +1,56 @@
+cylon = require 'cylon'
+lock = new (require 'rwlock')() 
+
+htu21d = new (require 'htu21d-i2c')()
+graphite = require 'graphite'
+graphite_client = graphite.createClient('plaintext://web01:2003/')
+
+prefix = 'stats.hvacpi.sensors.'
+
+getDualMeasurement = (index,setChannel,bmp180) ->
+  lock.writeLock 'i2c1_0x73',(release) -> 
+    bmp180.getPressure 1,(err,val) ->
+      if err
+        console.log err
+      else
+        htu21d.readTemperature (temp2) ->
+          htu21d.readHumidity (humidity) ->
+            val[prefix] = {}
+            val[prefix][index + '.temp2'] = temp2
+            val[prefix][index + '.humid'] = humidity
+            val[prefix][index + '.temp'] = val.temp
+            val[prefix][index + '.press'] = val.press
+            delete val.press
+            delete val.temp
+#            console.log index + " " + JSON.stringify(val)
+            graphite_client.write val, (err) ->
+              if err
+                console.log err
+            release()
+
+getCoefficients = (setChannel,bmp180) ->
+  bmp180.readCoefficients (err,val) ->
+    if err
+      console.log err
+
+#cylon.api()
+
+robot_config = 
+  name: "test"
+  connections:
+    raspi: 
+      adaptor: "raspi"
+  devices:
+    bmp180_0:
+      driver: "bmp180"
+      connection: "raspi"
+      address: "0x77"
+
+  work: (my) ->
+    getDualMeasurement 0, null, my.bmp180_0
+    every 60.seconds(), () ->
+      getDualMeasurement 0, null, my.bmp180_0
+
+cylon.robot(robot_config)
+	
+cylon.start()
